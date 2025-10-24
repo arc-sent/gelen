@@ -26,7 +26,7 @@ export const BookingIndex = (): JSX.Element => {
     const [minPriceStr, setMinPriceStr] = useState("0");
     const [maxPriceStr, setMaxPriceStr] = useState("20000");
     const url = import.meta.env.VITE_URL;
-    const urlFrontend = import.meta.env.VITE_FRONTEND;
+    const urlFrontend = "https://gelotpusk.ru";
     const [accommodationTypes, setAccommodationTypes] = useState<AccommodationType[]>([]);
     const [isFiltered, setIsFiltered] = useState(false);
     const [errorBooking, setErrorBooking] = useState(false)

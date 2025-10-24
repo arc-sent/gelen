@@ -18,7 +18,7 @@ export const BookingCardInfo = (): JSX.Element => {
   const params = useParams();
   const id = params.id
   const url = import.meta.env.VITE_URL;
-  const urlFrontend = import.meta.env.VITE_FRONTEND;
+  const urlFrontend = "https://gelotpusk.ru";
 
   const [errorBooking, setErrorBooking] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');

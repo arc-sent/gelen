@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet-async";
 export const ElementLight = (): JSX.Element => {
   const pageTitle = "Бронирование — Отдых в Геленджике";
   const pageDescription = "Лучшие предложения по отдыху в Геленджике. Забронируйте прямо сейчас!";
-  const urlFrontend = import.meta.env.VITE_URL;
+  const urlFrontend = "https://gelotpusk.ru";
 
   return (
     <div className="bg-[#f6f6f6] w-full min-h-screen">
