@@ -254,13 +254,18 @@ export const BookingCardEdit = (): JSX.Element => {
 
             console.log('dataBooking', dataBooking);
 
-            const createBooking = await axios.put(`${url}/bookings/${id}`, dataBooking);
+            const createBooking = await axios.put(`${url}/bookings/${id}`, dataBooking,
+                {
+                    withCredentials: true
+                }
+            );
 
             if (files.length !== 0) {
                 const response = await axios.post(`${url}/uploads/${id}`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
+                    withCredentials: true
                 });
 
                 console.log("Ответ сервера:", response.data);
