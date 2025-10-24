@@ -9,7 +9,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://admin:4173', 'http://frontend:5174'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://admin:4173', 'http://frontend:4174', "http://85.193.87.111:4173/" , 'http://85.193.87.111:4174/'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
