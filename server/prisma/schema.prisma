@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  login    String @unique
+  password String
+}
+
+model Booking {
+  id             Int              @id @default(autoincrement())
+  title          String
+  subTitle       String
+  description    String
+  categoryId     Int
+  subcategoryId  Int?
+
+  category       BookingCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subcategory    BookingSubCategory? @relation(fields: [subcategoryId], references: [id], onDelete: Cascade)
+
+  phone          String
+  guests         Int
+  beds           Int
+  area           Int
+  address        String
+  checkIn        String
+  exit           String
+  priority       Boolean @default(false)
+
+  // Правила проживания
+  childRules     Boolean
+  smokingRules   Boolean
+  petRules       Boolean
+  partyRules     Boolean
+
+  // Удобства
+  wifi           Boolean
+  bedLinen       Boolean
+  airConditioner Boolean
+  tv             Boolean
+  towels         Boolean
+  hairDryer      Boolean
+  pool           Boolean
+
+  image          Images[]
+  seasonalPrices SeasonalPrice[]
+
+  lat            Float
+  long           Float
+}
+
+model BookingCategory {
+  id             Int                 @id @default(autoincrement())
+  name           String              @unique
+  subCategories  BookingSubCategory[]
+  bookings       Booking[]
+}
+
+model BookingSubCategory {
+  id          Int              @id @default(autoincrement())
+  name        String
+  categoryId  Int
+  category    BookingCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
+}
+
+model Images {
+  id        Int      @id @default(autoincrement())
+  path      String
+  bookingId Int
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model SeasonalPrice {
+  id         Int      @id @default(autoincrement())
+  bookingId  Int
+  startDate  DateTime
+  endDate    DateTime
+  price      Int
+
+  booking    Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
