@@ -61,7 +61,7 @@ export const HeaderSection = ({
     setPriority: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
     const titleRef = useRef<HTMLTextAreaElement>(null);
-
+    const url = import.meta.env.VITE_URL
     // Переводы категорий и подкатегорий
     const CATEGORY_TRANSLATIONS: Record<string, string> = {
         APARTMENTS: "Квартиры",
@@ -93,7 +93,7 @@ export const HeaderSection = ({
 
     // Загружаем категории из API
     useEffect(() => {
-        fetch("http://localhost:3000/category")
+        fetch(`${url}/category`)
             .then((res) => res.json())
             .then((data) => setCategories(data))
             .catch((err) => console.error("Ошибка загрузки категорий:", err));
