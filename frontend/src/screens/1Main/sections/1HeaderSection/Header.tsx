@@ -109,16 +109,32 @@ export const Header = (): JSX.Element => {
             }`}
         >
           <nav className="flex flex-col items-center bg-white shadow-md rounded-lg py-4 mt-2 gap-2">
-            {navigationItems.map((item, index) => (
-              <Link
-                key={index}
-                to={item.href}
-                onClick={() => setIsOpen(false)} // закрыть меню при клике
-                className="w-full text-center font-semibold text-gray-700 text-base py-3 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200 border-b last:border-b-0"
-              >
-                {item.text}
-              </Link>
-            ))}
+            {navigationItems.map((item, index) => {
+              if (item.href.includes("#")) {
+                return (
+                  <HashLink
+                    key={index}
+                    smooth
+                    to={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="w-full text-center font-semibold text-gray-700 text-base py-3 hover:bg-gray-50 hover:text-[#5d8f4a] transition-colors duration-200 border-b last:border-b-0"
+                  >
+                    {item.text}
+                  </HashLink>
+                );
+              } else {
+                return (
+                  <Link
+                    key={index}
+                    to={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="w-full text-center font-semibold text-gray-700 text-base py-3 hover:bg-gray-50 hover:text-[#5d8f4a] transition-colors duration-200 border-b last:border-b-0"
+                  >
+                    {item.text}
+                  </Link>
+                );
+              }
+            })}
           </nav>
         </div>
       </div>
