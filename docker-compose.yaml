@@ -1,0 +1,66 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    container_name: db-container
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "1029381488"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "gelendzick"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: server-container
+    env_file:
+      - /server/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - backend
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: frontend-container
+    env_file:
+      - /frontend/.env
+    ports:
+      - "4174:4174"
+    depends_on:
+      - server
+    restart: always
+    networks:
+      - backend
+
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: admin-container
+    env_file:
+      - /admin/.env
+    ports:
+      - "4173:4173"
+    depends_on:
+      - server
+    restart: always
+    networks:
+      - backend
+volumes:
+  db-data:
+
+networks:
+  backend:
+    driver: bridge

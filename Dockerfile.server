@@ -1,0 +1,14 @@
+FROM node:18-alpine
+
+WORKDIR /app/server
+
+COPY server/package*.json ./
+RUN npm install
+
+COPY server ./
+
+RUN npx prisma generate --schema=prisma/schema.prisma
+RUN npm run build
+
+# Запуск приложения: выполняем миграции и запускаем сервер
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]

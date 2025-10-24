@@ -1,0 +1,14 @@
+FROM node:18-alpine
+
+WORKDIR /app/admin
+
+COPY admin/package*.json ./
+
+RUN npm install
+RUN npm install --save-dev @types/node
+
+COPY admin/ ./
+
+RUN npm run build
+
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "4173"]
