@@ -5,6 +5,8 @@ import { useState } from "react";
 export const HeaderSection = ({ id, title, address }: { id: number, title: string, address: string }) => {
     const [copied, setCopied] = useState(false);
 
+    
+
     const handleCopy = async () => {
         const url = `${import.meta.env.VITE_FRONTEND}/card/${id}`;
         try {

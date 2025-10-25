@@ -12,9 +12,10 @@ export const LocationMapSection = ({ lat, long, address }: LocationMapSectionPro
     <Card className="w-full bg-white rounded-lg shadow-sm border mb-8" id="locationCard">
       <CardContent className="p-6">
         <header className="mb-5">
-          <h2 className="[font-family:'Inter',Helvetica] font-bold text-black text-[22px] leading-normal whitespace-nowrap">
+          <h2 className="[font-family:'Inter',Helvetica] font-bold text-black text-[22px] leading-normal break-words">
             {address}
           </h2>
+
         </header>
 
         <Card className="bg-[#e5e3df] border rounded-lg overflow-hidden">
