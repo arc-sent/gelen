@@ -14,7 +14,6 @@ export const CreateBooking = (): JSX.Element => {
     const navigate = useNavigate();
     const url = import.meta.env.VITE_URL
 
-    //HeaderSection
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState<number | null>(null);
     const [subcategory, setSubcategory] = useState<number | null>(null);

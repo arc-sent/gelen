@@ -6,6 +6,7 @@ import { CreateBooking } from "./screens/3CreateBooking";
 import { BookingCardEdit } from "./screens/4BookingCardEdit";
 import ProtectedRoute from "./ProtectedRoute";
 import { Navigate } from "react-router-dom";
+import { CreateAdminSection } from "./screens/5EditUser";
 
 export const App = () => {
   return (
@@ -13,6 +14,7 @@ export const App = () => {
       <Routes>
         <Route path="/" element={<AuthorazitionSection />} />
         <Route element={<MainLayout />}>
+          <Route path="/createadmin" element={<ProtectedRoute><CreateAdminSection /></ProtectedRoute>} />
           <Route path="/booking" element={<ProtectedRoute><BookingIndex /></ProtectedRoute>} />
           <Route path="/create" element={<ProtectedRoute><CreateBooking /></ProtectedRoute>} />
           <Route path="/card/:id" element={<ProtectedRoute><BookingCardEdit /></ProtectedRoute>} />

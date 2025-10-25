@@ -34,7 +34,7 @@ export const AuthorazitionSection = () => {
 
     return (
         <section className="w-full relative flex justify-center items-center min-h-[60vh] px-4">
-            <Card className="bg-white rounded-lg shadow-sm w-full max-w-[400px]">
+            <Card className="bg-white rounded-lg shadow-lg w-full max-w-[400px]">
                 <CardContent className="p-5 space-y-6 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 text-center">
                         Авторизация администратора
@@ -45,7 +45,7 @@ export const AuthorazitionSection = () => {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Введите email"
+                            placeholder="Введите логин"
                             className="w-full h-[42px] px-4 rounded-md border border-solid border-gray-300 text-sm sm:text-base focus:outline-none focus:ring-1 focus:ring-green-500"
                         />
                         <input

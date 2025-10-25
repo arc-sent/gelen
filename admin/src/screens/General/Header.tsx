@@ -14,6 +14,7 @@ export const Header = (): JSX.Element => {
     const navigationItems = [
         { text: "СОЗДАТЬ ПРЕДЛОЖЕНИЕ", href: "/create" },
         { text: "ДОСТУПНЫЕ ПРЕДЛОЖЕНИЯ", href: "/booking" },
+        { text: "СОЗДАТЬ НОВОГО ЮЗЕРА", href: "/createadmin" },
     ];
 
     return (

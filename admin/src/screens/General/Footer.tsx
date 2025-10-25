@@ -26,8 +26,9 @@ export const Footer = () => {
                     <div className="md:col-span-1">
                         <h4 className="font-semibold text-gray-900 mb-4">Навигация</h4>
                         <ul className="space-y-2 text-sm">
-                            <li><Link to="/x1920w-light" className="text-gray-600 hover:text-blue-600 transition-colors">Создать предложение</Link></li>
-                            <li><Link to="/x1920w-light" className="text-gray-600 hover:text-blue-600 transition-colors">Доступные предложения</Link></li>
+                            <li><Link to="/create" className="text-gray-600 hover:text-[#5d8f4a] transition-colors">Создать предложение</Link></li>
+                            <li><Link to="/booking" className="text-gray-600 hover:text-[#5d8f4a] transition-colors">Доступные предложения</Link></li>
+                            <li><Link to="/createadmin" className="text-gray-600 hover:text-[#5d8f4a] transition-colors">Создать нового юзера</Link></li>
                         </ul>
                     </div>
 
