@@ -5,7 +5,7 @@ import { join } from 'path';
 
 @Injectable()
 export class UploadsService {
-  private uploadPath = join(process.cwd(), 'images');
+  private uploadPath = join(process.cwd(), '../images');
 
   constructor(private prisma: PrismaService) {
     if (!existsSync(this.uploadPath)) {

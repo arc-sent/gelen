@@ -320,6 +320,8 @@ export const BookingCardEdit = (): JSX.Element => {
                         />
 
                         <GallerySection
+                            navigate={navigate}
+                            setLoadingBooking={setLoadingBooking}
                             id={id}
                             serverImages={image} setServerImages={setImage}
                             files={files} setFiles={setFiles}
@@ -371,6 +373,7 @@ export const BookingCardEdit = (): JSX.Element => {
 
                     <div className="lg:col-span-1">
                         <BookingSection
+                            navigate={navigate}
                             setLoadingBooking={setLoadingBooking}
                             phone={phone}
                             setPhone={setPhone}

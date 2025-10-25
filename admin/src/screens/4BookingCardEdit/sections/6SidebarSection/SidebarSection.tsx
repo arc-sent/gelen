@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Button } from "../../../../components/ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
 import axios from "axios";
+import type { NavigateFunction } from "react-router-dom";
 
 interface seasonalPrices {
   id?: number, startDate: string; endDate: string; price: number;
 }
 
-export const BookingSection = ({ phone, setPhone, seasonalPrices, setSeasonalPrices, setLoadingBooking }: { phone: string, setPhone: React.Dispatch<React.SetStateAction<string>>, seasonalPrices: seasonalPrices[], setSeasonalPrices: React.Dispatch<React.SetStateAction<seasonalPrices[]>>, setLoadingBooking: React.Dispatch<React.SetStateAction<boolean>> }): JSX.Element => {
+export const BookingSection = ({ phone, setPhone, seasonalPrices, setSeasonalPrices, setLoadingBooking, navigate }: { phone: string, setPhone: React.Dispatch<React.SetStateAction<string>>, seasonalPrices: seasonalPrices[], setSeasonalPrices: React.Dispatch<React.SetStateAction<seasonalPrices[]>>, setLoadingBooking: React.Dispatch<React.SetStateAction<boolean>>, navigate: NavigateFunction }): JSX.Element => {
   const url = import.meta.env.VITE_URL
 
   const [newPeriod, setNewPeriod] = useState({
@@ -42,9 +43,16 @@ export const BookingSection = ({ phone, setPhone, seasonalPrices, setSeasonalPri
           }
         );
       }
-    } catch (err) {
-      alert("Ошибка при удалении сезонной цены");
-      console.error(err);
+    } catch (err: any) {
+      if (err.response && err.response.status === 401) {
+        alert("Сессия истекла. Пожалуйста, войдите заново.");
+        navigate("/");
+        return;
+      } else {
+        alert("Ошибка при удалении сезонной цены");
+        console.error(err);
+      }
+
     } finally {
       setLoadingBooking(false)
     }

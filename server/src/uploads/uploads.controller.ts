@@ -14,7 +14,7 @@ export class UploadsController {
     storage: diskStorage({
       destination: (req, file, cb) => {
         const bookingId = req.params.bookingId;
-        const uploadPath = `./images/${bookingId}`;
+        const uploadPath = `../images/${bookingId}`;
         if (!existsSync(uploadPath)) {
           mkdirSync(uploadPath, { recursive: true });
         }

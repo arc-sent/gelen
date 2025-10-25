@@ -22,7 +22,7 @@ async function bootstrap() {
   });
 
 
-  app.useStaticAssets(join(process.cwd(), 'images'), {
+  app.useStaticAssets(join(process.cwd(), '../images'), {
     prefix: '/images/',
   });
 

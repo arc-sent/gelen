@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
+import type { NavigateFunction } from "react-router-dom";
 
 type ServerImage = {
     id: number;
@@ -18,6 +19,8 @@ type Props = {
     handleDrop: (e: React.DragEvent<HTMLDivElement>) => void;
     isDragging: boolean;
     setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
+    setLoadingBooking: React.Dispatch<React.SetStateAction<boolean>>;
+    navigate: NavigateFunction
 };
 
 export const GallerySection = ({
@@ -30,6 +33,8 @@ export const GallerySection = ({
     handleDrop,
     isDragging,
     setIsDragging,
+    setLoadingBooking,
+    navigate
 }: Props) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -55,14 +60,28 @@ export const GallerySection = ({
     };
 
     const removeImage = async (index: number) => {
+
         const isServerImage = index < serverImages.length;
         if (isServerImage) {
             const image = serverImages[index];
             try {
-                await axios.delete(`${url}/uploads/${id}/${image.path}`);
+                setLoadingBooking(true)
+                await axios.delete(`${url}/uploads/${id}/${image.path}`, {
+                    withCredentials: true
+                });
                 setServerImages(prev => prev.filter((_, i) => i !== index));
-            } catch (err) {
-                alert('Ошибка при удалении изображения с сервера');
+            } catch (err: any) {
+                if (err.response && err.response.status === 401) {
+                    alert("Сессия истекла. Пожалуйста, войдите заново.");
+                    navigate("/");
+                    return;
+                } else {
+                    alert('Ошибка при удалении изображения с сервера');
+                }
+
+
+            } finally {
+                setLoadingBooking(false)
             }
         } else {
             setFiles(prev => prev.filter((_, i) => i !== index - serverImages.length));
