@@ -28,6 +28,8 @@ services:
     restart: always
     networks:
       - backend
+    volumes:
+    - ./server_images:/app/images
 
   frontend:
     build:

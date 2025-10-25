@@ -4,6 +4,8 @@ import { AdminController } from './admin.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { JwtMiddleware } from 'src/bookings/jwt.middleware';
 
 @Module({
   imports: [
@@ -16,4 +18,13 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
   controllers: [AdminController],
   providers: [AdminService, PrismaService, JwtService],
 })
-export class AdminModule { }
+
+export class AdminModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtMiddleware)
+      .forRoutes(
+        { path: 'admin/edit', method: RequestMethod.POST },
+      );
+  }
+}

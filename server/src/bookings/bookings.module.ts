@@ -1,4 +1,3 @@
-// bookings.module.ts
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { BookingsController } from './bookings.controller';
 import { BookingsService } from './bookings.service';

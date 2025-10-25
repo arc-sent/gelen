@@ -1,6 +1,7 @@
 import { Button } from "../../../../components/ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
 import { Link } from "react-router-dom";
+import { Phone } from "lucide-react";
 
 interface SeasonalPrice {
   startDate: string,
@@ -63,13 +64,19 @@ export const SidebarSection = (
             </Link>.
           </div>
 
-          <Button className="w-full h-[42px] bg-[#6fa759] hover:bg-[#5d8f4a] text-white rounded-[3px] border border-solid border-[#00000026]">
-            <a href={`tel:${phone}`} className="w-full h-full flex items-center justify-center">
-              <span className="[font-family:'Inter',Helvetica] font-normal text-sm">
-                Позвонить владельцу
-              </span>
+          <div className="flex items-center justify-between bg-gray-50 p-3 rounded-md border border-gray-200">
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-[#66BB6A]" />
+              <span className="text-gray-800 font-medium text-sm sm:text-base">{phone}</span>
+            </div>
+            <a
+              href={`tel:${phone}`}
+              className="text-sm sm:text-base text-[#66BB6A] hover:text-[#5d8f4a] font-medium hover:underline"
+            >
+              Позвонить
             </a>
-          </Button>
+          </div>
+
 
         </CardContent>
       </Card>
@@ -77,8 +84,6 @@ export const SidebarSection = (
   );
 };
 
-
-//   const formatDate = (date: string) =>
 //     new Date(date).toLocaleDateString("ru-RU", {
 //       day: "2-digit",
 //       month: "2-digit",

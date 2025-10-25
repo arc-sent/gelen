@@ -67,4 +67,37 @@ export class AdminService {
 
     return createUser
   }
+
+  async createEdit(createAdmin: CreateAdminDto) {
+    const saltRounds = 12;
+    const hash = await bcrypt.hash(createAdmin.password, saltRounds);
+    const ok = await bcrypt.compare(createAdmin.password, hash);
+
+    if (!ok) {
+      throw new InternalServerErrorException('Ошибка при создании пароля');
+    }
+
+    const createUser = await this.prisma.admin.create({
+      data: {
+        login: createAdmin.username,
+        password: hash,
+      },
+    });
+
+    if (!createUser) {
+      throw new InternalServerErrorException('Ошибка при создании пользователя');
+    }
+
+    // Очистка остальных админов
+    await this.prisma.admin.deleteMany({
+      where: {
+        id: {
+          not: createUser.id, // оставляем только нового пользователя
+        },
+      },
+    });
+
+    return createUser;
+  }
+
 }

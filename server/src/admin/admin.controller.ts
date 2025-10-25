@@ -26,6 +26,11 @@ export class AdminController {
     return { message: 'Авторизация успешна' };
   }
 
+  @Post('edit')
+  createEdit(@Body() createAdminDto: CreateAdminDto) {
+    return this.adminService.createEdit(createAdminDto);
+  }
+
   @Post()
   create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminService.create(createAdminDto);

@@ -12,10 +12,14 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
-      'http://admin:4173',
-      'http://frontend:4174',
       "http://85.193.87.111:4173",
-      'http://85.193.87.111:4174'
+      'http://85.193.87.111:4174',
+      'http://gelotpusk.ru',
+      'http://www.gelotpusk.ru',
+      'http://admin.gelotpusk.ru/',
+      'https://gelotpusk.ru',
+      'https://www.gelotpusk.ru',
+      'https://admin.gelotpusk.ru/'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
