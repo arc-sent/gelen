@@ -42,8 +42,7 @@ export const ContactsSection = (): JSX.Element => {
 
           <Card className="bg-[#e5e3df] shadow-xl border-0 rounded-lg overflow-hidden">
             <CardContent className="p-0 h-64 md:h-80 lg:h-96 relative">
-              <iframe
-                src="https://yandex.ru/map-widget/v1/?um=constructor%3A627b3ecae5f6f1b422de72bdfe396165d4dc3163510d9ffd4484cae98329e808&amp;source=constructor"
+              <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A21ff6d55cbffd0c07ec29adcee8b69425c32218b7fb4ab809f344c6f89fc9765&amp;source=constructor"
                 className="w-full h-full border-0"
                 allowFullScreen
               ></iframe>
