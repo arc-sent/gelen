@@ -193,8 +193,14 @@ export const CreateBooking = (): JSX.Element => {
             });
 
             navigate(`/card/${resCreateBooking.id}`);
-        } catch (err) {
+        } catch (err: any) {
             console.log('Произошла ошибка при отправке данных:', err)
+
+            if (err.response && err.response.status === 401) {
+                alert("Сессия истекла. Пожалуйста, войдите заново.");
+                navigate("/");
+                return;
+            }
 
             alert("Ошибка при отправке данных. Посмотртите консоль для справки");
         }

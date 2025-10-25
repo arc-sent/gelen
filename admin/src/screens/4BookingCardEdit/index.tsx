@@ -12,15 +12,15 @@ import { Button } from "../../components/ui/button";
 
 export const BookingCardEdit = (): JSX.Element => {
     const { id } = useParams();
-    const url = import.meta.env.VITE_URL
+    const url = import.meta.env.VITE_URL;
+    const navigate = useNavigate();
 
-    const navigate = useNavigate()
-
-    const [errorBooking, setErrorBooking] = useState(false)
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errorBooking, setErrorBooking] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [loadingBooking, setLoadingBooking] = useState(true);
 
     //HeaderSection
-    const [title, setTitle] = useState('');
+    const [title, setTitle] = useState("");
     const [category, setCategory] = useState<number | null>(null);
     const [subcategory, setSubcategory] = useState<number | null>(null);
     const [guests, setGuests] = useState(0);
@@ -32,20 +32,16 @@ export const BookingCardEdit = (): JSX.Element => {
     const [availableSubcategories, setAvailableSubcategories] = useState<
         { id: number; name: string }[]
     >([]);
-    const [priority, setPriority] = useState(false)
+    const [priority, setPriority] = useState(false);
 
     //GallerySection
     const [files, setFiles] = useState<File[]>([]);
-    const [image, setImage] = useState<{
-        id: number
-        path: string,
-        bookingId: number
-    }[]>([]);
+    const [image, setImage] = useState<{ id: number; path: string; bookingId: number }[]>([]);
     const [isDragging, setIsDragging] = useState(false);
 
     //DescriptionSection
-    const [subTitle, setSubTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [subTitle, setSubTitle] = useState("");
+    const [description, setDescription] = useState("");
 
     //RulesSection
     const [checkIn, setCheckIn] = useState("14:00");
@@ -76,76 +72,86 @@ export const BookingCardEdit = (): JSX.Element => {
     //SidebarSection
     const [phone, setPhone] = useState<string>("");
     const [seasonalPrices, setSeasonalPrices] = useState<
-        { id?: number, startDate: string; endDate: string; price: number }[]
+        { id?: number; startDate: string; endDate: string; price: number }[]
     >([]);
 
+    // === Загрузка данных бронирования ===
     useEffect(() => {
         const getBookingInfo = async () => {
+            try {
+                setLoadingBooking(true);
 
-            const getBooking = await axios.get(`${url}/bookings/${id}`, {
-                validateStatus: () => true,
-                withCredentials: true,
-            });
+                const getBooking = await axios.get(`${url}/bookings/${id}`, {
+                    validateStatus: () => true,
+                    withCredentials: true,
+                });
 
-            if (getBooking.status === 404) {
-                setErrorBooking(true)
-                setErrorMessage(getBooking.data.message)
+                if (getBooking.status === 404) {
+                    setErrorBooking(true);
+                    setErrorMessage(getBooking.data.message);
+                    return;
+                }
+
+                const dataBooking = getBooking.data;
+                console.log("dataBooking", dataBooking);
+
+                //Header
+                setTitle(dataBooking.title);
+                setCategory(dataBooking.category.id);
+                setSubcategory(dataBooking.subcategory.id);
+                setGuests(dataBooking.guests);
+                setBeds(dataBooking.beds);
+                setArea(dataBooking.area);
+                setPriority(dataBooking.priority);
+
+                //Gallery
+                setImage(dataBooking.image);
+
+                //Description
+                setSubTitle(dataBooking.subTitle);
+                setDescription(dataBooking.description);
+
+                //Rules
+                setCheckIn(dataBooking.checkIn);
+                setExit(dataBooking.exit);
+                setRules({
+                    childRules: dataBooking.childRules,
+                    smokingRules: dataBooking.smokingRules,
+                    petRules: dataBooking.petRules,
+                    partyRules: dataBooking.partyRules,
+                });
+
+                //Conveniences
+                setAmenitiesState({
+                    wifi: dataBooking.wifi,
+                    bedLinen: dataBooking.bedLinen,
+                    airConditioner: dataBooking.airConditioner,
+                    tv: dataBooking.tv,
+                    towels: dataBooking.towels,
+                    hairDryer: dataBooking.hairDryer,
+                    pool: dataBooking.pool,
+                });
+
+                //Location
+                setAddress(dataBooking.address);
+                setCoords([dataBooking.lat, dataBooking.long]);
+
+                //Sidebar
+                setPhone(dataBooking.phone);
+                setSeasonalPrices(dataBooking.seasonalPrices);
+            } catch (err) {
+                console.error("Ошибка при загрузке данных:", err);
+                setErrorBooking(true);
+                setErrorMessage("Не удалось загрузить данные бронирования.");
+            } finally {
+                setLoadingBooking(false);
             }
+        };
 
-            const dataBooking = getBooking.data
+        getBookingInfo();
+    }, [id, url]);
 
-            console.log("dataBooking", dataBooking);
-
-            setImage(dataBooking.image);
-
-            setTitle(dataBooking.title);
-            setCategory(dataBooking.category.id);
-            setSubcategory(dataBooking.subcategory.id);
-            setGuests(dataBooking.guests);
-            setBeds(dataBooking.beds);
-            setArea(dataBooking.area);
-            setPriority(dataBooking.priority);
-            // setCategories(dataBooking);
-            // setAvailableSubcategories(dataBooking);
-            //GallerySection
-
-            //DescriptionSection
-            setSubTitle(dataBooking.subTitle);
-            setDescription(dataBooking.description);
-
-            //RulesSection
-            setCheckIn(dataBooking.checkIn);
-            setExit(dataBooking.exit);
-            setRules({
-                childRules: dataBooking.childRules,
-                smokingRules: dataBooking.smokingRules,
-                petRules: dataBooking.petRules,
-                partyRules: dataBooking.partyRules,
-            });
-
-            //СonveniencesSection
-            setAmenitiesState({
-                wifi: dataBooking.wifi,
-                bedLinen: dataBooking.bedLinen,
-                airConditioner: dataBooking.airConditioner,
-                tv: dataBooking.tv,
-                towels: dataBooking.towels,
-                hairDryer: dataBooking.hairDryer,
-                pool: dataBooking.pool,
-            });
-
-            //LocationSection
-            setAddress(dataBooking.address);
-            setCoords([dataBooking.lat, dataBooking.long]);
-
-            //SidebarSection
-            setPhone(dataBooking.phone);
-            setSeasonalPrices(dataBooking.seasonalPrices);
-        }
-
-        getBookingInfo()
-    }, [id, url])
-
+    // === Геокодирование карты ===
     const showMap = async () => {
         if (!address) return;
         setLoading(true);
@@ -163,7 +169,7 @@ export const BookingCardEdit = (): JSX.Element => {
 
             if (geoObject) {
                 const pos = geoObject.Point.pos.split(" ").map(Number);
-                setCoords([pos[1], pos[0]]); // [lat, long]
+                setCoords([pos[1], pos[0]]);
             } else {
                 alert("Адрес не найден");
                 setCoords(null);
@@ -176,66 +182,48 @@ export const BookingCardEdit = (): JSX.Element => {
         }
     };
 
+    // === Сохранение данных ===
     const handleSubmit = async () => {
-        // Проверка заголовка и подзаголовка
         if (!title.trim()) return alert("Введите заголовок");
         if (!subTitle.trim()) return alert("Введите подзаголовок");
         if (!description.trim()) return alert("Введите описание");
-
-        // Проверка категории и подкатегории
         if (!category) return alert("Выберите категорию");
         if (!subcategory) return alert("Выберите подкатегорию");
-
-        // Проверка числовых полей
         if (!guests || guests <= 0) return alert("Введите корректное количество гостей");
         if (!beds || beds <= 0) return alert("Введите количество кроватей");
         if (!area || area <= 0) return alert("Введите площадь");
+        if (!address.trim() || !coords) return alert("Введите адрес и дождитесь карты");
+        if (!phone.trim()) return alert("Введите номер телефона");
+        if (!seasonalPrices.length) return alert("Добавьте хотя бы один период с ценой");
 
-        // Проверка адреса
-        if (!address.trim() || !coords) return alert("Введите адрес и дождитесь загрузки карты");
-
-        // Проверка телефона
-        if (!phone.trim()) {
-            return alert("Введите номер телефона");
-        }
-
-        // Простая проверка формата: только цифры, длина от 10 до 15
         const phoneRegex = /^\d{10,15}$/;
         if (!phoneRegex.test(phone.replace(/\D/g, ""))) {
             return alert("Введите корректный номер телефона (только цифры)");
         }
 
-        // Проверка сезонных цен
-        if (!seasonalPrices.length) return alert("Добавьте хотя бы один период с ценой");
-
         const formData = new FormData();
-
-        files.forEach(file => formData.append('files', file));
-
+        files.forEach((file) => formData.append("files", file));
         if (!image.length && !files.length) return alert("Добавьте хотя бы одну фотографию");
 
         try {
+            setLoadingBooking(true);
             const dataBooking = {
-                title: title,
-                subTitle: subTitle,
-                description: description,
+                title,
+                subTitle,
+                description,
                 categoryId: category,
                 subcategoryId: subcategory,
-                guests: guests,
-                beds: beds,
-                area: area,
-                address: address,
+                guests,
+                beds,
+                area,
+                address,
                 checkIn,
                 exit,
-                priority: priority,
-
-                // Правила проживания
+                priority,
                 childRules: rules.childRules,
                 smokingRules: rules.smokingRules,
                 petRules: rules.petRules,
                 partyRules: rules.partyRules,
-
-                // Удобства
                 wifi: amenitiesState.wifi,
                 bedLinen: amenitiesState.bedLinen,
                 airConditioner: amenitiesState.airConditioner,
@@ -243,53 +231,46 @@ export const BookingCardEdit = (): JSX.Element => {
                 towels: amenitiesState.towels,
                 hairDryer: amenitiesState.hairDryer,
                 pool: amenitiesState.pool,
-
-                // Геолокация
                 lat: coords[0],
                 long: coords[1],
-
-                phone: phone,
-                seasonalPrices: seasonalPrices
+                phone,
+                seasonalPrices,
             };
 
-            console.log('dataBooking', dataBooking);
+            console.log("dataBooking", dataBooking);
 
-            const createBooking = await axios.put(`${url}/bookings/${id}`, dataBooking,
-                {
-                    withCredentials: true
-                }
-            );
+            await axios.put(`${url}/bookings/${id}`, dataBooking, {
+                withCredentials: true,
+            });
 
             if (files.length !== 0) {
                 const response = await axios.post(`${url}/uploads/${id}`, formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                    withCredentials: true
+                    headers: { "Content-Type": "multipart/form-data" },
+                    withCredentials: true,
                 });
-
                 console.log("Ответ сервера:", response.data);
             }
-        } catch (err) {
-            console.log('Произошла ошибка при отправке данных:', err)
 
-            alert("Ошибка при отправке данных. Посмотртите консоль для справки");
+        } catch (err) {
+            console.log("Ошибка при отправке данных:", err);
+            alert("Ошибка при сохранении данных. Проверь консоль.");
+        } finally {
+            setLoadingBooking(false);
         }
     };
 
     const deleteSubmit = async () => {
         try {
-            const deleteBooking = await axios.delete(`${url}/bookings/${id}`)
-
-            navigate('/booking')
-            window.scrollTo(0, 0)
+            await axios.delete(`${url}/bookings/${id}`);
+            navigate("/booking");
+            window.scrollTo(0, 0);
         } catch (err) {
-            console.log('Произошла ошибка при удалении данных:', err)
-
-            alert("Ошибка при отправке данных. Посмотртите консоль для справки");
+            console.log("Ошибка при удалении:", err);
+            alert("Ошибка при удалении данных. Проверь консоль.");
         }
-    }
+    };
 
+    // === Работа с файлами ===
     const handleFiles = (selected: FileList | null) => {
         if (!selected) return;
         const validFiles = Array.from(selected).filter((f) => f.type === "image/jpeg");
@@ -305,12 +286,27 @@ export const BookingCardEdit = (): JSX.Element => {
         handleFiles(e.dataTransfer.files);
     };
 
+    if (loadingBooking) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-50 text-gray-700 p-6">
+                <p className="text-xl animate-pulse">Загрузка данных бронирования...</p>
+            </div>
+        );
+    }
+
+    if (errorBooking) {
+        return (
+            <div className="flex items-center justify-center min-h-screen text-red-600">
+                <p className="text-lg">{errorMessage || "Ошибка при загрузке данных."}</p>
+            </div>
+        );
+    }
+
     return (
         <main className="bg-white w-full">
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2">
-
                         <HeaderSection
                             title={title} setTitle={setTitle}
                             category={category} setCategory={setCategory}
@@ -328,16 +324,19 @@ export const BookingCardEdit = (): JSX.Element => {
                             serverImages={image} setServerImages={setImage}
                             files={files} setFiles={setFiles}
                             isDragging={isDragging} setIsDragging={setIsDragging}
-                            handleFiles={handleFiles} handleDrop={handleDrop} />
+                            handleFiles={handleFiles} handleDrop={handleDrop}
+                        />
 
                         <DescriptionSection
                             subTitle={subTitle} setSubTitle={setSubTitle}
-                            description={description} setDescription={setDescription} />
+                            description={description} setDescription={setDescription}
+                        />
 
                         <RulesSection
                             checkIn={checkIn} setCheckIn={setCheckIn}
                             exit={exit} setExit={setExit}
-                            rules={rules} setRules={setRules} />
+                            rules={rules} setRules={setRules}
+                        />
 
                         <СonveniencesSection
                             amenitiesState={amenitiesState}
@@ -357,7 +356,7 @@ export const BookingCardEdit = (): JSX.Element => {
                                 className="w-full py-3 border-gray-400 text-gray-700 hover:bg-gray-50 rounded-2xl mb-8"
                                 onClick={handleSubmit}
                             >
-                                Сохарнить
+                                Сохранить
                             </Button>
 
                             <Button
@@ -372,6 +371,7 @@ export const BookingCardEdit = (): JSX.Element => {
 
                     <div className="lg:col-span-1">
                         <BookingSection
+                            setLoadingBooking={setLoadingBooking}
                             phone={phone}
                             setPhone={setPhone}
                             seasonalPrices={seasonalPrices}
@@ -383,3 +383,4 @@ export const BookingCardEdit = (): JSX.Element => {
         </main>
     );
 };
+

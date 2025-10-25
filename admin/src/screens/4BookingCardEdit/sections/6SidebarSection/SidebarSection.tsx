@@ -4,10 +4,10 @@ import { Card, CardContent } from "../../../../components/ui/card";
 import axios from "axios";
 
 interface seasonalPrices {
-  id?: number, startDate: string; endDate: string; price: number
+  id?: number, startDate: string; endDate: string; price: number;
 }
 
-export const BookingSection = ({ phone, setPhone, seasonalPrices, setSeasonalPrices }: { phone: string, setPhone: React.Dispatch<React.SetStateAction<string>>, seasonalPrices: seasonalPrices[], setSeasonalPrices: React.Dispatch<React.SetStateAction<seasonalPrices[]>> }): JSX.Element => {
+export const BookingSection = ({ phone, setPhone, seasonalPrices, setSeasonalPrices, setLoadingBooking }: { phone: string, setPhone: React.Dispatch<React.SetStateAction<string>>, seasonalPrices: seasonalPrices[], setSeasonalPrices: React.Dispatch<React.SetStateAction<seasonalPrices[]>>, setLoadingBooking: React.Dispatch<React.SetStateAction<boolean>> }): JSX.Element => {
   const url = import.meta.env.VITE_URL
 
   const [newPeriod, setNewPeriod] = useState({
@@ -32,14 +32,21 @@ export const BookingSection = ({ phone, setPhone, seasonalPrices, setSeasonalPri
 
   const handleDeleteSeasonalPrice = async (id?: number) => {
     try {
+      setLoadingBooking(true)
       setSeasonalPrices(prev => prev.filter(item => item.id !== id));
 
       if (id) {
-        await axios.delete(`${url}/bookings/seasonsprice/${id}`);
+        await axios.delete(`${url}/bookings/seasonsprice/${id}`,
+          {
+            withCredentials: true
+          }
+        );
       }
     } catch (err) {
       alert("Ошибка при удалении сезонной цены");
       console.error(err);
+    } finally {
+      setLoadingBooking(false)
     }
   };
 

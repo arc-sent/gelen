@@ -33,6 +33,7 @@ export const BookingIndex = (): JSX.Element => {
     const [errorMessage, setErrorMessage] = useState('');
     const [bookings, setBookings] = useState<any[]>([]);
     const [click, setClick] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const CATEGORY_TRANSLATIONS: Record<string, string> = {
         APARTMENTS: "Квартиры",
@@ -88,6 +89,8 @@ export const BookingIndex = (): JSX.Element => {
 
 
     useEffect(() => {
+        setLoading(true)
+
         fetch(`${url}/category`)
             .then((res) => res.json())
             .then((data) => {
@@ -106,7 +109,11 @@ export const BookingIndex = (): JSX.Element => {
 
                 setAccommodationTypes(mapped);
             })
-            .catch((err) => console.error("Ошибка загрузки категорий:", err));
+            .catch((err) => {
+                console.error("Ошибка загрузки категорий:", err);
+                setErrorBooking(true)
+            })
+            .finally(() => setLoading(false))
     }, []);
 
     useEffect(() => {
@@ -136,6 +143,14 @@ export const BookingIndex = (): JSX.Element => {
 
         fetchBookings()
     }, [url]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-50 text-gray-700 p-6">
+                <p className="text-xl animate-pulse">Загрузка данных бронирования...</p>
+            </div>
+        );
+    }
 
     if (errorBooking) {
         return (
