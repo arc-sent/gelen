@@ -21,8 +21,9 @@ async function bootstrap() {
       'https://www.gelotpusk.ru',
       'https://admin.gelotpusk.ru'
     ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   });
 
 
