@@ -27,6 +27,7 @@ export const CreateBooking = (): JSX.Element => {
         { id: number; name: string }[]
     >([]);
     const [priority, setPriority] = useState(false)
+    const [loadingBooking, setLoadingBooking] = useState(false);
 
     //GallerySection
     const [files, setFiles] = useState<File[]>([]);
@@ -141,6 +142,7 @@ export const CreateBooking = (): JSX.Element => {
 
 
         try {
+            setLoadingBooking(true)
             const dataBooking = {
                 title: title,
                 subTitle: subTitle,
@@ -202,6 +204,8 @@ export const CreateBooking = (): JSX.Element => {
             } else {
                 alert("Ошибка при отправке данных. Посмотртите консоль для справки");
             }
+        } finally {
+            setLoadingBooking(false);
         }
     };
 
@@ -223,6 +227,14 @@ export const CreateBooking = (): JSX.Element => {
     useEffect(() => {
         console.log("priority", priority)
     }, [priority])
+
+    if (loadingBooking) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-50 text-gray-700 p-6">
+                <p className="text-xl animate-pulse">Отправка данных бронирования на сервер...</p>
+            </div>
+        );
+    }
 
     return (
         <main className="bg-white w-full">

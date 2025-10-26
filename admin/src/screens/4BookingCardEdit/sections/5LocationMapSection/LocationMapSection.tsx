@@ -1,7 +1,6 @@
 import { Card, CardContent } from "../../../../components/ui/card";
 import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
 import { useState } from "react";
-import axios from "axios";
 
 export const LocationMapSection = ({ address, setAddress, coords, loading, showMap }: { address: string, setAddress: React.Dispatch<React.SetStateAction<string>>, coords: [number, number] | null, loading: boolean, showMap: () => Promise<void> }): JSX.Element => {
 

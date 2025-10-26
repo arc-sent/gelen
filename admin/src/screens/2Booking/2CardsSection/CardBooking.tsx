@@ -1,5 +1,21 @@
 import { Card } from "../../../components/ui/card";
-import { BookingWithSeasonalPrice } from "../../interfaces/booking.interface";
+
+export interface BookingWithSeasonalPrice {
+    id: number;
+    title: string;
+    categoryId: number;
+    subTitle: string;
+    guests: number;
+    beds: number;
+    area: number;
+    address: string;
+    seasonalPrices: {
+        price: number;
+    }[];
+    image: {
+        path: string;
+    }[];
+}
 
 function pluralize(number: number, one: string, few: string, many: string) {
     const n = Math.abs(number);

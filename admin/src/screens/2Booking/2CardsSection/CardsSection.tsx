@@ -1,9 +1,23 @@
-import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
-import { Card } from "../../../components/ui/card";
-import { BookingWithSeasonalPrice } from "../../interfaces/booking.interface";
 import { CardBooking } from "./CardBooking";
 import { Link } from "react-router-dom";
+
+export interface BookingWithSeasonalPrice {
+    id: number;
+    title: string;
+    categoryId: number;
+    subTitle: string;
+    guests: number;
+    beds: number;
+    area: number;
+    address: string;
+    seasonalPrices: {
+        price: number;
+    }[];
+    image: {
+        path: string;
+    }[];
+}
 
 export const CardsSection = (
     {

@@ -3,6 +3,7 @@ import { CardsSection } from "./2CardsSection/CardsSection";
 import { RequestsSection } from "./3RequestsSection/RequestsSection";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 type Subcategory = {
     id: number;
@@ -30,6 +31,7 @@ export const BookingIndex = (): JSX.Element => {
     const [errorMessage, setErrorMessage] = useState('');
     const [bookings, setBookings] = useState<any[]>([]);
     const [click, setClick] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const CATEGORY_TRANSLATIONS: Record<string, string> = {
         APARTMENTS: "Квартиры",
@@ -57,7 +59,8 @@ export const BookingIndex = (): JSX.Element => {
                     categories: accommodationTypes,
                     priceMin: minPrice,
                     priceMax: maxPrice
-                }
+                },
+                { withCredentials: true }
             );
 
             setBookings(req.data)
@@ -68,7 +71,7 @@ export const BookingIndex = (): JSX.Element => {
 
     const handleGetAll = async () => {
         try {
-            const req = await axios.get(`${url}/bookings`);
+            const req = await axios.get(`${url}/bookings`, { withCredentials: true });
 
             setBookings(req.data)
             setClick(true)
@@ -84,6 +87,7 @@ export const BookingIndex = (): JSX.Element => {
 
 
     useEffect(() => {
+        setLoading(true)
         fetch(`${url}/category`)
             .then((res) => res.json())
             .then((data) => {
@@ -102,20 +106,23 @@ export const BookingIndex = (): JSX.Element => {
 
                 setAccommodationTypes(mapped);
             })
-            .catch((err) => console.error("Ошибка загрузки категорий:", err));
+            .catch((err) => console.error("Ошибка загрузки категорий:", err))
+            .finally(() => setLoading(false))
     }, []);
 
     useEffect(() => {
         const fetchBookings = async () => {
             try {
                 const res = await axios.get(`${url}/bookings/priority`, {
-                    validateStatus: () => true
+                    validateStatus: () => true,
+                    withCredentials: true
                 });
 
                 if (res.status === 404) {
                     setErrorBooking(true);
                     const fallback = await axios.get(`${url}/bookings/random`, {
-                        validateStatus: () => true
+                        validateStatus: () => true,
+                        withCredentials: true
                     });
                     if (fallback.status === 404) {
                         setErrorMessage(fallback.data.message);
@@ -133,8 +140,33 @@ export const BookingIndex = (): JSX.Element => {
         fetchBookings()
     }, [url]);
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-50 text-gray-700 p-6">
+                <p className="text-xl animate-pulse">Загрузка данных бронирования...</p>
+            </div>
+        );
+    }
+
     if (errorBooking) {
-        return <h1>{errorMessage}</h1>
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-red-50 text-red-700 p-6">
+                <svg
+                    className="w-16 h-16 mb-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h1 className="text-2xl font-bold mb-2">Ошибка</h1>
+                <p className="mb-4 text-center">{errorMessage}</p>
+                <Link to='/' onClick={() => window.scrollTo(0, 0)}>
+                    Меню авторизации
+                </Link>
+            </div>
+        );
     }
 
     return (

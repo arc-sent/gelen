@@ -261,7 +261,7 @@ export const BookingCardEdit = (): JSX.Element => {
 
     const deleteSubmit = async () => {
         try {
-            await axios.delete(`${url}/bookings/${id}`);
+            await axios.delete(`${url}/bookings/${id}`, { withCredentials: true });
             navigate("/booking");
             window.scrollTo(0, 0);
         } catch (err) {

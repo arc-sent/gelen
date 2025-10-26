@@ -1,11 +1,5 @@
-import { SearchIcon } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Badge } from "../../../components/ui/badge";
-import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
-import axios from "axios";
-
 
 type Subcategory = {
     id: number;
