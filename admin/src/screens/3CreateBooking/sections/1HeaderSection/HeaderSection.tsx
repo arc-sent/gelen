@@ -1,5 +1,6 @@
 import { Card, CardContent } from "../../../../components/ui/card";
 import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 
 export const HeaderSection = ({
     title,
@@ -93,9 +94,9 @@ export const HeaderSection = ({
 
     // Загружаем категории из API
     useEffect(() => {
-        fetch(`${url}/category`)
-            .then((res) => res.json())
-            .then((data) => setCategories(data))
+        axios
+            .get(`${url}/category`, { withCredentials: true })
+            .then((res) => setCategories(res.data))
             .catch((err) => console.error("Ошибка загрузки категорий:", err));
     }, []);
 

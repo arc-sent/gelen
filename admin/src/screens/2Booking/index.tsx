@@ -88,9 +88,11 @@ export const BookingIndex = (): JSX.Element => {
 
     useEffect(() => {
         setLoading(true)
-        fetch(`${url}/category`)
-            .then((res) => res.json())
-            .then((data) => {
+        axios
+            .get(`${url}/category`, { withCredentials: true })
+            .then((res) => {
+                const data = res.data;
+
                 const mapped: AccommodationType[] = data.map((cat: any) => ({
                     id: cat.id,
                     name: CATEGORY_TRANSLATIONS[cat.name] || cat.name, // перевод категории
@@ -107,7 +109,7 @@ export const BookingIndex = (): JSX.Element => {
                 setAccommodationTypes(mapped);
             })
             .catch((err) => console.error("Ошибка загрузки категорий:", err))
-            .finally(() => setLoading(false))
+            .finally(() => setLoading(false));
     }, []);
 
     useEffect(() => {
