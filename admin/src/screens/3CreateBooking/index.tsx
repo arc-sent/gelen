@@ -99,6 +99,116 @@ export const CreateBooking = (): JSX.Element => {
         }
     };
 
+    // const handleSubmit = async () => {
+    //     // Проверка заголовка и подзаголовка
+    //     if (!title.trim()) return alert("Введите заголовок");
+    //     if (!subTitle.trim()) return alert("Введите подзаголовок");
+    //     if (!description.trim()) return alert("Введите описание");
+
+    //     // Проверка категории и подкатегории
+    //     if (!category) return alert("Выберите категорию");
+    //     if (category !== 4) {
+    //         if (!subcategory) return alert("Выберите подкатегорию");
+    //     }
+
+    //     // Проверка числовых полей
+    //     if (!guests || guests <= 0) return alert("Введите корректное количество гостей");
+    //     if (!beds || beds <= 0) return alert("Введите количество кроватей");
+    //     if (!area || area <= 0) return alert("Введите площадь");
+
+    //     // Проверка адреса
+    //     if (!address.trim() || !coords) return alert("Введите адрес и дождитесь загрузки карты");
+
+    //     // Проверка телефона
+    //     if (!phone.trim()) {
+    //         return alert("Введите номер телефона");
+    //     }
+
+    //     // Простая проверка формата: только цифры, длина от 10 до 15
+    //     const phoneRegex = /^\d{10,15}$/;
+    //     if (!phoneRegex.test(phone.replace(/\D/g, ""))) {
+    //         return alert("Введите корректный номер телефона (только цифры)");
+    //     }
+
+    //     // Проверка сезонных цен
+    //     if (!seasonalPrices.length) return alert("Добавьте хотя бы один период с ценой");
+
+    //     // Проверка файлов
+    //     if (!files.length) return alert("Добавьте хотя бы одну фотографию");
+
+    //     const formData = new FormData();
+
+    //     files.forEach(file => formData.append('files', file));
+
+    //     try {
+    //         setLoadingBooking(true)
+    //         const dataBooking = {
+    //             title: title,
+    //             subTitle: subTitle,
+    //             description: description,
+    //             categoryId: category,
+    //             subcategoryId: subcategory,
+    //             guests: guests,
+    //             beds: beds,
+    //             area: area,
+    //             address: address,
+    //             checkIn,
+    //             exit,
+    //             priority: priority,
+
+    //             // Правила проживания
+    //             childRules: rules.childRules,
+    //             smokingRules: rules.smokingRules,
+    //             petRules: rules.petRules,
+    //             partyRules: rules.partyRules,
+
+    //             // Удобства
+    //             wifi: amenitiesState.wifi,
+    //             bedLinen: amenitiesState.bedLinen,
+    //             airConditioner: amenitiesState.airConditioner,
+    //             tv: amenitiesState.tv,
+    //             towels: amenitiesState.towels,
+    //             hairDryer: amenitiesState.hairDryer,
+    //             pool: amenitiesState.pool,
+
+    //             // Геолокация
+    //             lat: coords[0],
+    //             long: coords[1],
+
+    //             phone: phone,
+    //             seasonalPrices: seasonalPrices
+    //         };
+
+    //         const createBooking = await axios.post(`${url}/bookings`, dataBooking, {
+    //             withCredentials: true
+    //         });
+
+    //         const resCreateBooking = createBooking.data.booking;
+
+    //         await axios.post(`${url}/uploads/${resCreateBooking.id}`, formData, {
+    //             headers: {
+    //                 "Content-Type": "multipart/form-data",
+    //             },
+    //             withCredentials: true
+    //         });
+
+    //         navigate(`/card/${resCreateBooking.id}`);
+    //     } catch (err: any) {
+    //         console.log('Произошла ошибка при отправке данных:', err)
+
+    //         if (err.response && err.response.status === 401) {
+    //             alert("Сессия истекла. Пожалуйста, войдите заново.");
+    //             navigate("/");
+    //             return;
+    //         } else {
+    //             alert("Ошибка при отправке данных. Посмотртите консоль для справки");
+    //         }
+    //     } finally {
+    //         setLoadingBooking(false);
+    //     }
+    // };
+
+
     const handleSubmit = async () => {
         // Проверка заголовка и подзаголовка
         if (!title.trim()) return alert("Введите заголовок");
@@ -136,13 +246,17 @@ export const CreateBooking = (): JSX.Element => {
         // Проверка файлов
         if (!files.length) return alert("Добавьте хотя бы одну фотографию");
 
-        const formData = new FormData();
-
-        files.forEach(file => formData.append('files', file));
-
+        // Проверка размера файлов (максимум 10MB на файл)
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        for (let file of files) {
+            if (file.size > maxSize) {
+                return alert(`Файл ${file.name} слишком большой. Максимальный размер: 10MB`);
+            }
+        }
 
         try {
-            setLoadingBooking(true)
+            setLoadingBooking(true);
+
             const dataBooking = {
                 title: title,
                 subTitle: subTitle,
@@ -180,34 +294,81 @@ export const CreateBooking = (): JSX.Element => {
                 seasonalPrices: seasonalPrices
             };
 
+            // 1. Сначала создаем бронирование
             const createBooking = await axios.post(`${url}/bookings`, dataBooking, {
-                withCredentials: true
+                withCredentials: true,
+                timeout: 30000
             });
 
             const resCreateBooking = createBooking.data.booking;
 
-            await axios.post(`${url}/uploads/${resCreateBooking.id}`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-                withCredentials: true
-            });
+            // 2. Затем загружаем файлы с улучшенной обработкой
+            if (files.length > 0) {
+                try {
+                    // Ограничиваем количество одновременных загрузок
+                    await uploadFilesInBatches(resCreateBooking.id, files, 2);
+                } catch (uploadError) {
+                    console.error('Ошибка загрузки файлов:', uploadError);
+                    alert('Бронирование создано, но некоторые файлы не загрузились. Вы можете добавить их позже.');
+                }
+            }
 
             navigate(`/card/${resCreateBooking.id}`);
-        } catch (err: any) {
-            console.log('Произошла ошибка при отправке данных:', err)
 
-            if (err.response && err.response.status === 401) {
-                alert("Сессия истекла. Пожалуйста, войдите заново.");
-                navigate("/");
-                return;
-            } else {
-                alert("Ошибка при отправке данных. Посмотртите консоль для справки");
-            }
+        } catch (err: any) {
+            handleSubmitError(err);
         } finally {
             setLoadingBooking(false);
         }
     };
+
+    const uploadFilesInBatches = async (bookingId: number, files: File[], batchSize: number) => {
+        for (let i = 0; i < files.length; i += batchSize) {
+            const batch = files.slice(i, i + batchSize);
+            const uploadPromises = batch.map(file => uploadSingleFile(bookingId, file));
+
+            await Promise.all(uploadPromises);
+
+            // Пауза между батчами для избежания перегрузки
+            if (i + batchSize < files.length) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+    };
+
+    const uploadSingleFile = async (bookingId: number, file: File) => {
+        const formData = new FormData();
+        formData.append('files', file);
+
+        return axios.post(`${url}/uploads/${bookingId}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+            timeout: 60000
+        });
+    };
+
+    // Специализированная обработка ошибок
+    const handleSubmitError = (err: any) => {
+        console.log('Произошла ошибка при отправке данных:', err);
+
+        if (err.code === 'ERR_HTTP2_PROTOCOL_ERROR') {
+            alert("Проблема с соединением. Пожалуйста, попробуйте еще раз или уменьшите размер файлов.");
+        } else if (err.code === 'ECONNABORTED') {
+            alert("Превышено время ожидания. Пожалуйста, проверьте интернет-соединение.");
+        } else if (err.response?.status === 401) {
+            alert("Сессия истекла. Пожалуйста, войдите заново.");
+            navigate("/");
+        } else if (err.response?.status === 413) {
+            alert("Слишком большой размер файлов. Пожалуйста, уменьшите размер фотографий.");
+        } else if (err.response?.status === 429) {
+            alert("Слишком много запросов. Пожалуйста, подождите немного.");
+        } else {
+            alert("Ошибка при отправке данных. Пожалуйста, попробуйте еще раз.");
+        }
+    };
+
 
     const handleFiles = (selected: FileList | null) => {
         if (!selected) return;
