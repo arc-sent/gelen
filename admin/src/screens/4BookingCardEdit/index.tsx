@@ -75,7 +75,7 @@ export const BookingCardEdit = (): JSX.Element => {
         { id?: number; startDate: string; endDate: string; price: number }[]
     >([]);
 
-    // === Загрузка данных бронирования ===
+
     useEffect(() => {
         const getBookingInfo = async () => {
             try {
@@ -151,7 +151,6 @@ export const BookingCardEdit = (): JSX.Element => {
         getBookingInfo();
     }, [id, url]);
 
-    // === Геокодирование карты ===
     const showMap = async () => {
         if (!address) return;
         setLoading(true);
@@ -244,11 +243,12 @@ export const BookingCardEdit = (): JSX.Element => {
             });
 
             if (files.length !== 0) {
-                const response = await axios.post(`${url}/uploads/${id}`, formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                    withCredentials: true,
-                });
-                console.log("Ответ сервера:", response.data);
+                try {
+                    await uploadFilesInBatches(id, files, 2);
+                } catch (uploadError) {
+                    console.error('Ошибка загрузки файлов:', uploadError);
+                    alert('Бронирование создано, но некоторые файлы не загрузились. Вы можете добавить их позже.');
+                }
             }
 
         } catch (err) {
@@ -257,6 +257,33 @@ export const BookingCardEdit = (): JSX.Element => {
         } finally {
             setLoadingBooking(false);
         }
+    };
+
+    const uploadFilesInBatches = async (bookingId: number, files: File[], batchSize: number) => {
+        for (let i = 0; i < files.length; i += batchSize) {
+            const batch = files.slice(i, i + batchSize);
+            const uploadPromises = batch.map(file => uploadSingleFile(bookingId, file));
+
+            await Promise.all(uploadPromises);
+
+            // Пауза между батчами для избежания перегрузки
+            if (i + batchSize < files.length) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+    };
+
+    const uploadSingleFile = async (bookingId: number, file: File) => {
+        const formData = new FormData();
+        formData.append('files', file);
+
+        return axios.post(`${url}/uploads/${bookingId}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+            timeout: 60000
+        });
     };
 
     const deleteSubmit = async () => {
@@ -270,7 +297,6 @@ export const BookingCardEdit = (): JSX.Element => {
         }
     };
 
-    // === Работа с файлами ===
     const handleFiles = (selected: FileList | null) => {
         if (!selected) return;
         const validFiles = Array.from(selected).filter((f) => f.type === "image/jpeg");
@@ -285,6 +311,8 @@ export const BookingCardEdit = (): JSX.Element => {
         setIsDragging(false);
         handleFiles(e.dataTransfer.files);
     };
+
+
 
     if (loadingBooking) {
         return (

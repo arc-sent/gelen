@@ -305,7 +305,6 @@ export const CreateBooking = (): JSX.Element => {
             // 2. Затем загружаем файлы с улучшенной обработкой
             if (files.length > 0) {
                 try {
-                    // Ограничиваем количество одновременных загрузок
                     await uploadFilesInBatches(resCreateBooking.id, files, 2);
                 } catch (uploadError) {
                     console.error('Ошибка загрузки файлов:', uploadError);
@@ -349,7 +348,6 @@ export const CreateBooking = (): JSX.Element => {
         });
     };
 
-    // Специализированная обработка ошибок
     const handleSubmitError = (err: any) => {
         console.log('Произошла ошибка при отправке данных:', err);
 
