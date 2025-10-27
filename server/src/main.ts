@@ -26,10 +26,10 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   });
 
-
-  app.useStaticAssets(join(process.cwd(), '../images'), {
+  app.useStaticAssets(join(__dirname, '..', '..', 'images'), {
     prefix: '/images/',
   });
+
 
   await app.listen(process.env.PORT ?? 3000);
 }
