@@ -86,7 +86,28 @@ export const GallerySection = ({
                         </div>
 
                         {/* Миниатюры */}
-                        <div className="flex sm:grid sm:grid-flow-col gap-2 mt-3 justify-start overflow-x-auto sm:overflow-hidden cursor-grab scrollbar-hide">
+                        <div
+                            className="flex sm:grid sm:grid-flow-col gap-2 mt-3 justify-start overflow-x-auto sm:overflow-hidden cursor-grab scrollbar-hide"
+                            onMouseDown={(e) => {
+                                const slider = e.currentTarget;
+                                let startX = e.pageX - slider.offsetLeft;
+                                let scrollLeft = slider.scrollLeft;
+
+                                const onMouseMove = (eMove: MouseEvent) => {
+                                    const x = eMove.pageX - slider.offsetLeft;
+                                    const walk = x - startX;
+                                    slider.scrollLeft = scrollLeft - walk;
+                                };
+
+                                const onMouseUp = () => {
+                                    window.removeEventListener("mousemove", onMouseMove);
+                                    window.removeEventListener("mouseup", onMouseUp);
+                                };
+
+                                window.addEventListener("mousemove", onMouseMove);
+                                window.addEventListener("mouseup", onMouseUp);
+                            }}
+                        >
                             {files.map((file, index) => (
                                 <button
                                     key={index}

@@ -153,7 +153,7 @@ export const GallerySection = ({
                     </div>
 
                     {/* Миниатюры */}
-                    <div className="flex sm:grid sm:grid-flow-col gap-2 mt-3 justify-start overflow-x-auto sm:overflow-hidden cursor-grab scrollbar-hide">
+                    <div className="flex sm:grid sm:grid-flow-col gap-2 mt-3 justify-start overflow-x-auto cursor-grab scrollbar-hide">
                         {allImages.map((img, index) => (
                             <div
                                 key={index}
