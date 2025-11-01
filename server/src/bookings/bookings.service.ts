@@ -62,14 +62,11 @@ export class BookingsService {
   }
 
   async update(id: number, updateBookingDto: CreateBookingDto) {
-    // Проверяем, существует ли бронирование
     const existingBooking = await this.prisma.booking.findUnique({ where: { id } });
     if (!existingBooking) {
       throw new NotFoundException(`Бронирование с id ${id} не найдено`);
     }
 
-
-    // Обновляем бронирование
     const updatedBooking = await this.prisma.booking.update({
       where: { id },
       data: {
@@ -103,7 +100,7 @@ export class BookingsService {
           createMany: {
             data: updateBookingDto.seasonalPrices
               .map(item => {
-                if (item.id) return undefined; // пропускаем уже существующие
+                if (item.id) return undefined;
                 return {
                   startDate: new Date(item.startDate),
                   endDate: new Date(item.endDate),
@@ -145,11 +142,25 @@ export class BookingsService {
         address: true,
         seasonalPrices: {
           where: {
-            startDate: { lte: targetDate },
-            endDate: { gte: targetDate }
+            OR: [
+              {
+                startDate: { lte: targetDate },
+                endDate: { gte: targetDate }
+              },
+              {
+                startDate: { lte: targetDate }
+              }
+            ]
           },
+          orderBy: [
+            { startDate: 'desc' },
+            { endDate: 'desc' }
+          ],
+          take: 1,
           select: {
-            price: true
+            price: true,
+            startDate: true,
+            endDate: true
           }
         },
         image: {
@@ -202,39 +213,51 @@ export class BookingsService {
   }
 
   async findPriority(targetDate: Date) {
-    const findBooking = await this.prisma.booking.findMany(
-      {
-        where: { priority: true },
-        select: {
-          id: true,
-          title: true,
-          categoryId: true,
-          subTitle: true,
-          guests: true,
-          beds: true,
-          area: true,
-          address: true,
-          seasonalPrices: {
-            where: {
-              startDate: { lte: targetDate },
-              endDate: { gte: targetDate }
-            },
-            select: {
-              price: true
-            }
+    const findBooking = await this.prisma.booking.findMany({
+      where: { priority: true },
+      select: {
+        id: true,
+        title: true,
+        categoryId: true,
+        subTitle: true,
+        guests: true,
+        beds: true,
+        area: true,
+        address: true,
+        seasonalPrices: {
+          where: {
+            OR: [
+              {
+                startDate: { lte: targetDate },
+                endDate: { gte: targetDate }
+              },
+              {
+                startDate: { lte: targetDate }
+              }
+            ]
           },
-          image: {
-            take: 1
+          orderBy: [
+            { startDate: 'desc' },
+            { endDate: 'desc' }
+          ],
+          take: 1,
+          select: {
+            price: true,
+            startDate: true,
+            endDate: true
           }
+        },
+        image: {
+          take: 1
         }
       }
-    );
+    });
 
     if (!findBooking) {
-      throw new NotFoundException('Данных предложения не существует.')
+      throw new NotFoundException('Данных предложения не существует.');
     }
 
-    return findBooking
+    return findBooking;
   }
 
   async findRandom() {
